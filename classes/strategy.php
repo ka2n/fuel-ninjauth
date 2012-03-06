@@ -93,17 +93,33 @@ abstract class Strategy {
 					throw new Exception('No uid in response.');
 				}
 				
-				// Attach this account to the logged in user
-				Model_Authentication::forge(array(
-					'user_id' 		=> $user_id,
-					'provider' 		=> $strategy->provider->name,
-					'uid' 			=> $user_hash['uid'],
-					'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
-					'secret' 		=> isset($token->secret) ? $token->secret : null,
-					'expires' 		=> isset($token->expires) ? $token->expires : null,
-					'refresh_token' => isset($token->refresh_token) ? $token->refresh_token : null,
-					'created_at' 	=> time(),
-				))->save();
+                // If already authentication exists, just update it
+                if($old = Model_Authentication::find_by_provider_and_uid($strategy->provider->name, $user_hash['uid']))
+                {
+                    $old['user_id'] = $user_id;
+                    $old['access_token'] = isset($token->access_token) ? $token->access_token : null;
+                    $old['secret'] = isset($token->secret) ? $token->secret : null;
+                    $old['expires'] = isset($token->expires) ? $token->expires : null;
+                    $old['refresh_token'] = isset($token->refresh_token) ? $token->refresh_token : null;
+                    $old->save();
+                }
+
+                else
+                {
+
+                    // Attach this account to the logged in user
+                    Model_Authentication::forge(array(
+                        'user_id' 		=> $user_id,
+                        'provider' 		=> $strategy->provider->name,
+                        'uid' 			=> $user_hash['uid'],
+                        'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
+                        'secret' 		=> isset($token->secret) ? $token->secret : null,
+                        'expires' 		=> isset($token->expires) ? $token->expires : null,
+                        'refresh_token' => isset($token->refresh_token) ? $token->refresh_token : null,
+                        'created_at' 	=> time(),
+                    ))->save();
+                }
+
 
 				// Attachment went ok so we'll redirect
 				\Response::redirect(\Config::get('ninjauth.urls.logged_in'));
