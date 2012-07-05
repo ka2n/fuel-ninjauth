@@ -126,7 +126,13 @@ abstract class Strategy
 				}
 
                 // If already authentication exists, just update it
-                if($old = Model_Authentication::find_by_provider_and_uid($strategy->provider->name, $user_hash['uid']))
+                $old = current(Model_Authentication::find(array(
+                    'where' => array(
+                        'provider'  => $this->provider->name,
+                        'uid'       => $user_hash['uid'] 
+                    ),
+                )));
+                if($old)
                 {
                     if($user_id === $old['user_id'])
                     {
@@ -145,7 +151,7 @@ abstract class Strategy
                     // Attach this account to the logged in user
                     Model_Authentication::forge(array(
                         'user_id' 		=> $user_id,
-                        'provider' 		=> $strategy->provider->name,
+                        'provider' 		=> $this->provider->name,
                         'uid' 			=> $user_hash['uid'],
                         'access_token' 	=> isset($token->access_token) ? $token->access_token : null,
                         'secret' 		=> isset($token->secret) ? $token->secret : null,
