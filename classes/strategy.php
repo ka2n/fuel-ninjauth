@@ -124,18 +124,21 @@ abstract class Strategy
 				{
 					throw new Exception('No uid in response.');
 				}
-				
+
                 // If already authentication exists, just update it
                 if($old = Model_Authentication::find_by_provider_and_uid($strategy->provider->name, $user_hash['uid']))
                 {
-                    $old['user_id'] = $user_id;
-                    $old['access_token'] = isset($token->access_token) ? $token->access_token : null;
-                    $old['secret'] = isset($token->secret) ? $token->secret : null;
-                    $old['expires'] = isset($token->expires) ? $token->expires : null;
-                    $old['refresh_token'] = isset($token->refresh_token) ? $token->refresh_token : null;
-                    $old->save();
+                    if($user_id === $old['user_id'])
+                    {
+                        $old['access_token'] = isset($token->access_token) ? $token->access_token : null;
+                        $old['secret'] = isset($token->secret) ? $token->secret : null;
+                        $old['expires'] = isset($token->expires) ? $token->expires : null;
+                        $old['refresh_token'] = isset($token->refresh_token) ? $token->refresh_token : null;
+                        $old->save();
+                    } else {
+                        throw new AuthException('This account is already linked to different user.');
+                    }
                 }
-
                 else
                 {
 
@@ -151,6 +154,7 @@ abstract class Strategy
                         'created_at' 	=> time(),
                     ))->save();
                 }
+
 
 				// Attachment went ok so we'll redirect
 				return 'linked';
