@@ -4,6 +4,7 @@ namespace NinjAuth;
 
 use Arr;
 use Config;
+use Lang;
 use Input;
 use Response;
 use Session;
@@ -32,6 +33,8 @@ class Controller extends \Controller
 
 		// Load the configuration for this provider
 		Config::load('ninjauth', true);
+        // Load language file
+        Lang::load('ninjauth', true);
 	}
 
 	public function action_session($provider)

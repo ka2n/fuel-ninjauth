@@ -5,6 +5,7 @@ namespace NinjAuth;
 use Arr;
 use Config;
 use Session;
+use Lang;
 
 /**
  * NinjAuth Strategy
@@ -142,7 +143,7 @@ abstract class Strategy
                         $old['refresh_token'] = isset($token->refresh_token) ? $token->refresh_token : null;
                         $old->save();
                     } else {
-                        throw new AuthException('This account is already linked to different user.');
+                        throw new AuthException(Lang::get('ninjauth.already_linked_different_user', array(), false) ?: 'This account is already linked to different user.');
                     }
                 }
                 else
