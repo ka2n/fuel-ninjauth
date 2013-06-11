@@ -133,6 +133,8 @@ class Controller extends \Controller
 					'created_at' => time(),
 				))->save();
 
+				Session::set_flash('ninjauth.user_id', $user_id);
+
 				Response::redirect(static::$registered_redirect);
 			}
 		}
