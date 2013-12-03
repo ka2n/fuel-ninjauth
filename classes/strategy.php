@@ -128,12 +128,13 @@ abstract class Strategy
 				}
 
                 // If already authentication exists, just update it
-                $old = current(Model_Authentication::find(array(
+                $old = Model_Authentication::find(array(
                     'where' => array(
                         'provider'  => $this->provider->name,
                         'uid'       => $user_hash['uid'] 
                     ),
-                )));
+                ));
+                is_array($old) and $old = current($old);
                 if($old)
                 {
                     if($user_id === $old['user_id'])
